@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackJack.Api", "BlackJack.Api\BlackJack.Api.csproj", "{AF18A006-F69D-4295-9249-35EFD5F493B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF18A006-F69D-4295-9249-35EFD5F493B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF18A006-F69D-4295-9249-35EFD5F493B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF18A006-F69D-4295-9249-35EFD5F493B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF18A006-F69D-4295-9249-35EFD5F493B2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFCECBB0-CFC0-4EE1-8811-947C8D7273BE}
+	EndGlobalSection
+EndGlobal
