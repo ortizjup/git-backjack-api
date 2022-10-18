@@ -105,15 +105,24 @@ namespace BlackJack.NetCore.Web.Api.DataContext
                     .HasColumnName("email")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.HashContraseña)
-                    .IsRequired()
-                    .HasColumnName("hashContraseña")
-                    .HasColumnType("binary(50)");
-
                 entity.Property(e => e.Nombre)
                     .IsRequired()
                     .HasColumnName("nombre")
                     .HasMaxLength(50);
+
+                entity.Property(e => e.PasswordHash)
+                    .IsRequired()
+                    .HasColumnName("passwordHash")
+                    .HasColumnType("longblob");
+
+                entity.Property(e => e.PasswordSalt)
+                    .IsRequired()
+                    .HasColumnName("passwordSalt")
+                    .HasColumnType("longblob");
+
+                entity.Property(e => e.PhotoUrl)
+                    .HasColumnName("photoUrl")
+                    .HasMaxLength(100);
             });
 
             modelBuilder.Entity<UsuariosCartasJuegos>(entity =>

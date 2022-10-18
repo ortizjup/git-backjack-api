@@ -18,7 +18,9 @@ namespace BlackJack.NetCore.Web.Api.Models
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Email { get; set; }
-        public byte[] HashContraseña { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
+        public string PhotoUrl { get; set; }
 
         public virtual ICollection<UsuariosCartasJuegos> UsuariosCartasJuegos { get; set; }
     }
