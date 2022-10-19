@@ -91,6 +91,13 @@ namespace BlackJack.NetCore.Web.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BlackJack.Web.Api");
             });
 
+            app.UseCors(x =>
+            {
+                x.AllowAnyHeader();
+                x.AllowAnyMethod();
+                x.AllowAnyOrigin();
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();

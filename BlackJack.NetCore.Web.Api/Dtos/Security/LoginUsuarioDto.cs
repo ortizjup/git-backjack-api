@@ -4,12 +4,12 @@ namespace BlackJack.NetCore.Web.Api.Dtos.Security
 {
     public class LoginUsuarioDto
     {
-        [Required(ErrorMessage = "You must provide a username")]
-        [StringLength(50, MinimumLength = 4, ErrorMessage = "Username max length allow is between 4 and 100 characters")]
-        public string UserName { get; set; }
+        [Required(ErrorMessage = "El correo electrónico es requerido.")]
+        [StringLength(50, MinimumLength = 4, ErrorMessage = "El usuario debe tener 4 caracteres como minimo y 50 como maximo.")]
+        public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password must be provided")]
-        [StringLength(50, MinimumLength = 4, ErrorMessage = "Password max length allow is 50 characters")]
+        [Required(ErrorMessage = "La contraseña es requerida.")]
+        [StringLength(50, MinimumLength = 4, ErrorMessage = "La contraseña debe tener 4 caracteres como minimo y 50 como maximo.")]
         public string Password { get; set; }
     }
 }

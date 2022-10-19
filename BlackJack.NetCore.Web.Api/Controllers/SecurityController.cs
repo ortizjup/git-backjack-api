@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System;
 using System.Threading.Tasks;
+using BlackJack.NetCore.Web.Api.Helpers;
 
 namespace BlackJack.NetCore.Web.Api.Controllers
 {
@@ -30,8 +31,11 @@ namespace BlackJack.NetCore.Web.Api.Controllers
         [HttpPost("registrar")]
         public async Task<IActionResult> Registrar(RegistrarUsuarioDto userForRegisterDto)
         {
+            if (userForRegisterDto.FechaNacimiento.CalcularEdad() < 18)
+                return BadRequest("Su edad es menor a 18 años. Este juego es solo para mayores de edad.");
+
             if (await _securityService.UsuarioExiste(userForRegisterDto.Email))
-                return BadRequest("El mail ya esta registrado");
+                return BadRequest("El usuario/correo electrónico ya esta registrado.");
 
             var userToCreate = await _securityService.RegistrarUsuario(userForRegisterDto, userForRegisterDto.Password);
 
@@ -43,7 +47,7 @@ namespace BlackJack.NetCore.Web.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUsuarioDto userForLoginDto)
         {
-            var userFromRepo = await _securityService.Login(userForLoginDto.UserName.ToLower(), userForLoginDto.Password);
+            var userFromRepo = await _securityService.Login(userForLoginDto.Email.ToLower(), userForLoginDto.Password);
 
             if (userFromRepo == null)
                 return Unauthorized();

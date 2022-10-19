@@ -8,7 +8,7 @@ namespace BlackJack.NetCore.Web.Api.Dtos.Security
     public class RegistrarUsuarioDto
     {
 
-        [Required(ErrorMessage = "Email es un campo requerido.")]
+        [Required(ErrorMessage = "Correo electrónico es un campo requerido.")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Nombre es un campo requerido.")]
@@ -20,10 +20,10 @@ namespace BlackJack.NetCore.Web.Api.Dtos.Security
         public string Apellido { get; set; }
 
         [Required(ErrorMessage = "Fecha de nacimiento es un campo requerido.")]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime FechaNacimiento { get; set; }
 
         [Required(ErrorMessage = "Contraseña es un campo requerido.")]
-        [StringLength(50, MinimumLength = 8, ErrorMessage = "La contraseña tiene que se entre 8 y 50 caracteres.")]
+        [StringLength(50, MinimumLength = 4, ErrorMessage = "La contraseña tiene que se entre 4 y 50 caracteres.")]
         public string Password { get; set; }
 
 
