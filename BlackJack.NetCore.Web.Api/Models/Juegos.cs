@@ -11,13 +11,19 @@ namespace BlackJack.NetCore.Web.Api.Models
     {
         public Juegos()
         {
-            UsuariosCartasJuegos = new HashSet<UsuariosCartasJuegos>();
+            DetallesJuego = new HashSet<DetallesJuego>();
         }
 
         public int IdJuego { get; set; }
-        public bool? Activo { get; set; }
+        public int IdUsuario { get; set; }
+        public DateTime Fecha { get; set; }
+        public bool Activo { get; set; }
         public string Description { get; set; }
+        public bool? GanoJugador { get; set; }
+        public int? ScoreJugador { get; set; }
+        public int? ScoreCrupier { get; set; }
 
-        public virtual ICollection<UsuariosCartasJuegos> UsuariosCartasJuegos { get; set; }
+        public virtual Usuarios IdUsuarioNavigation { get; set; }
+        public virtual ICollection<DetallesJuego> DetallesJuego { get; set; }
     }
 }

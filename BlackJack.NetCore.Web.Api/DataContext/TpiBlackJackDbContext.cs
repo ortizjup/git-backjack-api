@@ -1,7 +1,5 @@
-﻿using System;
+﻿using BlackJack.NetCore.Web.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using BlackJack.NetCore.Web.Api.Models;
 
 // Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
 // If you have enabled NRTs for your project, then un-comment the following line:
@@ -21,9 +19,12 @@ namespace BlackJack.NetCore.Web.Api.DataContext
         }
 
         public virtual DbSet<Cartas> Cartas { get; set; }
+        public virtual DbSet<CartasValores> CartasValores { get; set; }
+        public virtual DbSet<Categorias> Categorias { get; set; }
+        public virtual DbSet<DetallesJuego> DetallesJuego { get; set; }
         public virtual DbSet<Juegos> Juegos { get; set; }
         public virtual DbSet<Usuarios> Usuarios { get; set; }
-        public virtual DbSet<UsuariosCartasJuegos> UsuariosCartasJuegos { get; set; }
+        public virtual DbSet<Valores> Valores { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,6 +44,9 @@ namespace BlackJack.NetCore.Web.Api.DataContext
 
                 entity.ToTable("cartas");
 
+                entity.HasIndex(e => e.IdCategoria)
+                    .HasName("Cartas_Categorias_idx");
+
                 entity.Property(e => e.IdCarta)
                     .HasColumnName("id_carta")
                     .HasColumnType("int(11)");
@@ -50,16 +54,149 @@ namespace BlackJack.NetCore.Web.Api.DataContext
                 entity.Property(e => e.Codigo)
                     .IsRequired()
                     .HasColumnName("codigo")
-                    .HasMaxLength(2);
+                    .HasColumnType("varchar(2)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
 
-                entity.Property(e => e.Descripcion)
-                    .IsRequired()
-                    .HasColumnName("descripcion")
-                    .HasMaxLength(50);
+                entity.Property(e => e.IdCategoria)
+                    .HasColumnName("id_categoria")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Nombre)
+                    .HasColumnName("nombre")
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
 
                 entity.Property(e => e.Numero)
                     .HasColumnName("numero")
                     .HasColumnType("int(11)");
+
+                entity.Property(e => e.ShowBack)
+                    .HasColumnName("showBack")
+                    .HasColumnType("bit(1)")
+                    .HasConversion<bool>();
+
+                entity.HasOne(d => d.IdCategoriaNavigation)
+                    .WithMany(p => p.Cartas)
+                    .HasForeignKey(d => d.IdCategoria)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Cartas_Categorias");
+            });
+
+            modelBuilder.Entity<CartasValores>(entity =>
+            {
+                entity.HasKey(e => e.IdCartavalores)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("cartas_valores");
+
+                entity.HasIndex(e => e.IdCarta)
+                    .HasName("CartasValores_Cartas_idx");
+
+                entity.HasIndex(e => e.IdValor)
+                    .HasName("CartaValores_Valores_idx");
+
+                entity.Property(e => e.IdCartavalores)
+                    .HasColumnName("id_cartavalores")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.IdCarta)
+                    .HasColumnName("id_carta")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.IdValor)
+                    .HasColumnName("id_valor")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.IdCartaNavigation)
+                    .WithMany(p => p.CartasValores)
+                    .HasForeignKey(d => d.IdCarta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("CartasValores_Cartas");
+
+                entity.HasOne(d => d.IdValorNavigation)
+                    .WithMany(p => p.CartasValores)
+                    .HasForeignKey(d => d.IdValor)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("CartaValores_Valores");
+            });
+
+            modelBuilder.Entity<Categorias>(entity =>
+            {
+                entity.HasKey(e => e.IdCategoria)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("categorias");
+
+                entity.Property(e => e.IdCategoria)
+                    .HasColumnName("id_categoria")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.Codigo)
+                    .HasColumnName("codigo")
+                    .HasColumnType("varchar(2)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
+
+                entity.Property(e => e.Descripcion)
+                    .HasColumnName("descripcion")
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
+
+                entity.Property(e => e.NewTablecol)
+                    .HasColumnName("new_tablecol")
+                    .HasColumnType("varchar(45)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
+            });
+
+            modelBuilder.Entity<DetallesJuego>(entity =>
+            {
+                entity.HasKey(e => e.IdDetalleJuego)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("detalles_juego");
+
+                entity.HasIndex(e => e.IdCarta)
+                    .HasName("DetallesJuego_Cartas_idx");
+
+                entity.HasIndex(e => e.IdJuego)
+                    .HasName("Usuarios_Cartas_Juegos_Juegos_idx");
+
+                entity.Property(e => e.IdDetalleJuego)
+                    .HasColumnName("id_detalle_juego")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.EsCartaCrupier)
+                    .HasColumnName("esCartaCrupier")
+                    .HasColumnType("bit(1)")
+                    .HasConversion<bool>();
+
+                entity.Property(e => e.IdCarta)
+                    .HasColumnName("id_carta")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.IdJuego)
+                    .HasColumnName("id_juego")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ValorCarta)
+                    .HasColumnName("valorCarta")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.IdCartaNavigation)
+                    .WithMany(p => p.DetallesJuego)
+                    .HasForeignKey(d => d.IdCarta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("DetallesJuego_Cartas");
+
+                entity.HasOne(d => d.IdJuegoNavigation)
+                    .WithMany(p => p.DetallesJuego)
+                    .HasForeignKey(d => d.IdJuego)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("DetallesJuego_Juegos");
             });
 
             modelBuilder.Entity<Juegos>(entity =>
@@ -69,19 +206,49 @@ namespace BlackJack.NetCore.Web.Api.DataContext
 
                 entity.ToTable("juegos");
 
+                entity.HasIndex(e => e.IdUsuario)
+                    .HasName("Juegos_Usuarios_idx");
+
                 entity.Property(e => e.IdJuego)
                     .HasColumnName("id_juego")
                     .HasColumnType("int(11)");
 
                 entity.Property(e => e.Activo)
-                    .IsRequired()
                     .HasColumnName("activo")
                     .HasColumnType("bit(1)")
                     .HasDefaultValueSql("b'0'");
 
                 entity.Property(e => e.Description)
                     .HasColumnName("description")
-                    .HasMaxLength(50);
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
+
+                entity.Property(e => e.Fecha)
+                    .HasColumnName("fecha")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.GanoJugador)
+                    .HasColumnName("ganoJugador")
+                    .HasColumnType("bit(1)");
+
+                entity.Property(e => e.IdUsuario)
+                    .HasColumnName("id_usuario")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ScoreCrupier)
+                    .HasColumnName("scoreCrupier")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ScoreJugador)
+                    .HasColumnName("scoreJugador")
+                    .HasColumnType("int(11)");
+
+                entity.HasOne(d => d.IdUsuarioNavigation)
+                    .WithMany(p => p.Juegos)
+                    .HasForeignKey(d => d.IdUsuario)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Juegos_Usuarios");
             });
 
             modelBuilder.Entity<Usuarios>(entity =>
@@ -98,82 +265,55 @@ namespace BlackJack.NetCore.Web.Api.DataContext
                 entity.Property(e => e.Apellido)
                     .IsRequired()
                     .HasColumnName("apellido")
-                    .HasMaxLength(50);
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasColumnName("email")
-                    .HasMaxLength(50);
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
 
                 entity.Property(e => e.Nombre)
                     .IsRequired()
                     .HasColumnName("nombre")
-                    .HasMaxLength(50);
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
 
                 entity.Property(e => e.PasswordHash)
                     .IsRequired()
-                    .HasColumnName("passwordHash")
-                    .HasColumnType("longblob");
+                    .HasColumnName("passwordHash");
 
                 entity.Property(e => e.PasswordSalt)
                     .IsRequired()
-                    .HasColumnName("passwordSalt")
-                    .HasColumnType("longblob");
+                    .HasColumnName("passwordSalt");
 
                 entity.Property(e => e.PhotoUrl)
                     .HasColumnName("photoUrl")
-                    .HasMaxLength(100);
+                    .HasColumnType("varchar(100)")
+                    .HasCharSet("latin1")
+                    .HasCollation("latin1_swedish_ci");
             });
 
-            modelBuilder.Entity<UsuariosCartasJuegos>(entity =>
+            modelBuilder.Entity<Valores>(entity =>
             {
-                entity.HasKey(e => e.IdCombination)
+                entity.HasKey(e => e.IdValor)
                     .HasName("PRIMARY");
 
-                entity.ToTable("usuarios_cartas_juegos");
+                entity.ToTable("valores");
 
-                entity.HasIndex(e => e.IdCarta)
-                    .HasName("id_carta_idx");
+                entity.HasComment("	");
 
-                entity.HasIndex(e => e.IdJuego)
-                    .HasName("Usuarios_Cartas_Juegos_Juegos_idx");
-
-                entity.HasIndex(e => e.IdUsuario)
-                    .HasName("Usuarios_Cartas_Juegos_Usuarios_idx");
-
-                entity.Property(e => e.IdCombination)
-                    .HasColumnName("id_combination")
+                entity.Property(e => e.IdValor)
+                    .HasColumnName("id_valor")
                     .HasColumnType("int(11)");
 
-                entity.Property(e => e.IdCarta)
-                    .HasColumnName("id_carta")
+                entity.Property(e => e.Valor)
+                    .HasColumnName("valor")
                     .HasColumnType("int(11)");
-
-                entity.Property(e => e.IdJuego)
-                    .HasColumnName("id_juego")
-                    .HasColumnType("int(11)");
-
-                entity.Property(e => e.IdUsuario)
-                    .HasColumnName("id_usuario")
-                    .HasColumnType("int(11)");
-
-                entity.HasOne(d => d.IdCartaNavigation)
-                    .WithMany(p => p.UsuariosCartasJuegos)
-                    .HasForeignKey(d => d.IdCarta)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Usuarios_Cartas_Juegos_Cartas");
-
-                entity.HasOne(d => d.IdJuegoNavigation)
-                    .WithMany(p => p.UsuariosCartasJuegos)
-                    .HasForeignKey(d => d.IdJuego)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Usuarios_Cartas_Juegos_Juegos");
-
-                entity.HasOne(d => d.IdUsuarioNavigation)
-                    .WithMany(p => p.UsuariosCartasJuegos)
-                    .HasForeignKey(d => d.IdUsuario)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Usuarios_Cartas_Juegos_Usuarios");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -11,7 +11,7 @@ namespace BlackJack.NetCore.Web.Api.Models
     {
         public Usuarios()
         {
-            UsuariosCartasJuegos = new HashSet<UsuariosCartasJuegos>();
+            Juegos = new HashSet<Juegos>();
         }
 
         public int IdUsuario { get; set; }
@@ -22,6 +22,6 @@ namespace BlackJack.NetCore.Web.Api.Models
         public byte[] PasswordSalt { get; set; }
         public string PhotoUrl { get; set; }
 
-        public virtual ICollection<UsuariosCartasJuegos> UsuariosCartasJuegos { get; set; }
+        public virtual ICollection<Juegos> Juegos { get; set; }
     }
 }

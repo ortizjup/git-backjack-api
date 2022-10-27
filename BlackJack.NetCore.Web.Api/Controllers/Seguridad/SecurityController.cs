@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 using BlackJack.NetCore.Web.Api.Helpers;
 
-namespace BlackJack.NetCore.Web.Api.Controllers
+namespace BlackJack.NetCore.Web.Api.Controllers.Seguridad
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -73,7 +73,7 @@ namespace BlackJack.NetCore.Web.Api.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var user = ((ListadoUsuarioDto)userFromRepo);
+            var user = (ListadoUsuarioDto)userFromRepo;
 
             return Ok(new
             {

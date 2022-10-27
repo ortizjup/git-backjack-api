@@ -1,6 +1,7 @@
 using BlackJack.NetCore.Web.Api.DataContext;
 using BlackJack.NetCore.Web.Api.Helpers;
 using BlackJack.NetCore.Web.Api.Services.Security;
+using BlackJack.NetCore.Web.Api.Services.Servicios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -42,6 +43,8 @@ namespace BlackJack.NetCore.Web.Api
             services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<IServicioJuego, ServicioJuego>();
+            services.AddScoped<ICartaService, CartaService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>
                {
@@ -98,10 +101,9 @@ namespace BlackJack.NetCore.Web.Api
                 x.AllowAnyOrigin();
             });
 
-            app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseRouting();
-
+            app.UseHttpsRedirection();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
