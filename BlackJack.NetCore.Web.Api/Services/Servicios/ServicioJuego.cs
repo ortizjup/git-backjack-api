@@ -21,52 +21,55 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
 
         public async Task<ActiveGameSetupDto> GetActiveGame(int idUsuario)
         {
-            var one = await _tpiBlackJackDbContext.DetallesJuego
-                    .Include(x => x.IdJuegoNavigation)
-                    .ThenInclude(x => x.IdUsuarioNavigation)
-                    .FirstOrDefaultAsync(x => x.IdJuegoNavigation.IdUsuario == idUsuario && x.IdJuegoNavigation.Activo);
+            var retVal = new ActiveGameSetupDto();
+            var juegoActivo = await _tpiBlackJackDbContext.Juegos
+                    .Include(x => x.IdUsuarioNavigation)
+                    .Include(x => x.DetallesJuego)
+                        .ThenInclude(x => x.IdCartaNavigation)
+                            .ThenInclude(x => x.IdCategoriaNavigation)
+                    .OrderByDescending(x => x.IdJuego)
+                    .FirstOrDefaultAsync(x => x.IdUsuario == idUsuario && x.Activo);
 
-            var activeGameSetup = new ActiveGameSetupDto
+            if (juegoActivo?.Activo ?? false)
             {
-                CartasCrupier = await _tpiBlackJackDbContext.DetallesJuego
-                .Include(x => x.IdJuegoNavigation)
-                    .ThenInclude(x => x.IdUsuarioNavigation)
-                .Include(x => x.IdCartaNavigation)
-                .ThenInclude(x => x.IdCategoriaNavigation)
-                .Where(x => x.EsCartaCrupier)
-                .Select(x => new CartaDto
+                var cartasCrupier = await _tpiBlackJackDbContext.DetallesJuego.AsNoTracking().Where(x => x.IdJuego == juegoActivo.IdJuego && x.EsCartaCrupier).Select(x => new CartaDto
                 {
                     Id = x.IdCarta,
-                    CategoriaCartaDto = x.IdCartaNavigation.IdCategoriaNavigation,
                     IdCategoria = x.IdCartaNavigation.IdCategoria,
-                    Identificador = x.IdCartaNavigation.IdCarta,
+                    Identificador = x.IdCarta,
                     Nombre = x.IdCartaNavigation.Nombre,
                     Numero = x.IdCartaNavigation.Numero,
-                    Valores = new List<int>(x.ValorCarta).ToArray()
-                }).ToListAsync(),
-                CartasUsuario = await _tpiBlackJackDbContext.DetallesJuego
-                .Include(x => x.IdJuegoNavigation)
-                    .ThenInclude(x => x.IdUsuarioNavigation)
-                .Include(x => x.IdCartaNavigation)
-                .ThenInclude(x => x.IdCategoriaNavigation)
-                .Where(x => !x.EsCartaCrupier && x.IdJuegoNavigation.IdUsuario == idUsuario && x.IdJuegoNavigation.Activo)
-                .Select(x => new CartaDto
-                {
-                    Id = x.IdCarta,
-                    CategoriaCartaDto = x.IdCartaNavigation.IdCategoriaNavigation,
-                    IdCategoria = x.IdCartaNavigation.IdCategoria,
-                    Identificador = x.IdCartaNavigation.IdCarta,
-                    Nombre = x.IdCartaNavigation.Nombre,
-                    Numero = x.IdCartaNavigation.Numero,
-                    Valores = new List<int>(x.ValorCarta).ToArray()
-                }).ToListAsync(),
-                idJuego = one?.IdJuego ?? 0,
-                idUsuario = idUsuario,
-                Jugador = one?.IdJuegoNavigation?.IdUsuarioNavigation,
-                Active = one?.IdJuegoNavigation?.Activo ?? false
-            };
+                    Valores = new List<int> { x.ValorCarta }.ToArray(),
+                    CategoriaCartaDto = x.IdCartaNavigation.IdCategoriaNavigation
+                }).ToListAsync();
 
-            return activeGameSetup;
+                var cartasJugador = await _tpiBlackJackDbContext.DetallesJuego.AsNoTracking().Where(x => x.IdJuego == juegoActivo.IdJuego && !x.EsCartaCrupier).Select(x => new CartaDto
+                {
+                    Id = x.IdCarta,
+                    IdCategoria = x.IdCartaNavigation.IdCategoria,
+                    Identificador = x.IdCarta,
+                    Nombre = x.IdCartaNavigation.Nombre,
+                    Numero = x.IdCartaNavigation.Numero,
+                    Valores = new List<int> { x.ValorCarta }.ToArray(),
+                    CategoriaCartaDto = x.IdCartaNavigation.IdCategoriaNavigation
+                }).ToListAsync();
+
+                foreach (var juego in juegoActivo.DetallesJuego)
+                {
+                    retVal.idUsuario = idUsuario;
+                    retVal.idJuego = juego.IdJuego;
+                    retVal.Active = true;
+                    retVal.CartasUsuario = cartasJugador;
+                    retVal.CartasCrupier = cartasCrupier;
+                    retVal.Jugador = juegoActivo.IdUsuarioNavigation;
+                    retVal.ScoreCrupier = cartasCrupier.Sum(x => x.Valores.FirstOrDefault());
+                    retVal.ScoreJugador = cartasJugador.Sum(x => x.Valores.FirstOrDefault());
+                    retVal.juegoDto = juegoActivo;
+
+                }
+            }
+            
+            return retVal;
         }
 
         public async Task<JuegoDto> GetJuegoById(int idJuego, bool esCrupier, bool active)
