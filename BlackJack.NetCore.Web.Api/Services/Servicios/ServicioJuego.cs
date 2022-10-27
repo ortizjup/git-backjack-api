@@ -105,7 +105,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
             var juego = new Juegos { IdUsuario = idUsuario, IdJuego = 0, Activo = true, Description = string.Empty, Fecha = DateTime.Now, GanoJugador = false };
             await _tpiBlackJackDbContext.AddAsync(juego);
             await _tpiBlackJackDbContext.SaveChangesAsync();
-            return await _tpiBlackJackDbContext.Juegos.Include(x => x.IdUsuarioNavigation).FirstOrDefaultAsync(x => x.IdUsuario == idUsuario);
+            return await _tpiBlackJackDbContext.Juegos.Include(x => x.IdUsuarioNavigation).OrderByDescending(x => x.IdJuego).FirstOrDefaultAsync(x => x.IdUsuario == idUsuario);
         }
 
         public async Task UpdateValorCarta(int idUsuario, int idJuego, int idCarta, int valorSolicitado)
@@ -145,7 +145,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                     .ThenInclude(x => x.IdCartaNavigation)
                         .ThenInclude(x => x.IdCategoriaNavigation)
                 .Where(x => x.IdUsuario == idUsuario)
-                .OrderByDescending(d => d.Fecha)
+                .OrderByDescending(d => d.IdJuego)
                 .Skip(0).Take(10)
                 .Select<Juegos, JuegoDto>(x => x).ToListAsync();
         }

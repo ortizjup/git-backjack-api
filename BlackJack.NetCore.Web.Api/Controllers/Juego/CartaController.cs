@@ -30,5 +30,13 @@ namespace BlackJack.NetCore.Web.Api.Controllers.Juego
             await _servicio.AddDetallesJuegos(cartas, dto.IdJuego, dto.EsCrupier);
             return Ok(cartas);
         }
+
+        [HttpPost("solicitarCartaFinPartidaCrupier")]
+        public async Task<IActionResult> SolicitarCartaFinPartidaCrupier([FromBody] RequestCartaFinPartidaCrupierDto dto)
+        {
+            var cartas = await _cartaService.SolicitarCartasFinPartidaCrupier(dto.IdJuego, dto.IdUsuario, dto.ScoreCrupier, true);
+            await _servicio.AddDetallesJuegos(cartas, dto.IdJuego, dto.EsCrupier);
+            return Ok(cartas);
+        }
     }
 }

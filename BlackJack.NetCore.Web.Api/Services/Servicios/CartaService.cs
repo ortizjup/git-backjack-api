@@ -48,5 +48,39 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
 
             return retVal;
         }
+
+        public async Task<List<CartaDto>> SolicitarCartasFinPartidaCrupier(int idJuego, int idUsuario, int scoreActual, bool esCrupier)
+        {
+            var retVal = new List<CartaDto>();
+
+            while(scoreActual < 17)
+            {
+                var min = 1;
+                var max = 52;
+
+                var cartasActuales = _tpiBlackJackDbContext.DetallesJuego.AsNoTracking()
+                    .Where(x => x.IdJuego == idJuego && x.IdJuegoNavigation.IdUsuario == idUsuario && x.IdJuegoNavigation.Activo && x.EsCartaCrupier == esCrupier)
+                    .Select(x => x.IdCartaNavigation)
+                    .ToList();
+
+                var numero = new Random().Next(min, max);
+                var cartasDisponibles = Enumerable.Range(min, max).Except(cartasActuales.Select(x => x.Numero).ToList());
+
+                while (!cartasDisponibles.Any(x => x == numero))
+                {
+                    numero = new Random().Next(min, max);
+                }
+
+                retVal.Add(await _tpiBlackJackDbContext.Cartas
+                    .Include(x => x.IdCategoriaNavigation)
+                    .Include(x => x.CartasValores)
+                    .ThenInclude(x => x.IdValorNavigation)
+                    .AsNoTracking().FirstOrDefaultAsync(x => x.IdCarta == numero));
+
+                scoreActual = scoreActual + retVal.Sum(x => x.Valores.FirstOrDefault());
+            }
+
+            return retVal;
+        }
     }
 }
