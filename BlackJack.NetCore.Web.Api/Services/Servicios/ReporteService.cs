@@ -33,6 +33,8 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                 .ToListAsync();
 
             var totalPartidas = partidas.Count();
+            var partidasGanadasCrupier = 0;
+            var partidasGanadasJugador = 0;
 
             if (totalPartidas <= 0)
             {
@@ -43,10 +45,11 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                 };
             }
 
-            var partidasGanadasCrupier = partidas.Count(x => x.DetallesJuego.Where(x => x.EsCartaCrupier)
-                                .Sum(x => x.ValorCarta) > x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta));
-            var partidasGanadasJugador = partidas.Count(x => x.DetallesJuego.Where(x => !x.EsCartaCrupier)
-                                .Sum(x => x.ValorCarta) > x.DetallesJuego.Where(x => x.EsCartaCrupier).Sum(x => x.ValorCarta));
+            foreach (var partida in partidas.GroupBy(x => x.IdJuego))
+            {
+                partidasGanadasCrupier += partida.Where(x => x.DetallesJuego.Where(x => x.EsCartaCrupier).Sum(x => x.ValorCarta) > x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta)).Count();
+                partidasGanadasJugador += partida.Where(x => x.DetallesJuego.Where(x => x.EsCartaCrupier).Sum(x => x.ValorCarta) < x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta)).Count();
+            }
 
             return new ReporteIndicePartidaGanadasCrupier { PorcentajeCrupier = ((partidasGanadasCrupier / totalPartidas) * 100), PorcentajeJugador = ((partidasGanadasJugador / totalPartidas) * 100) };
         }
