@@ -29,7 +29,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                 .Include(x => x.DetallesJuego)
                 .ThenInclude(x => x.IdCartaNavigation)
                 .ThenInclude(x => x.IdCategoriaNavigation)
-                .Where(x => x.IdUsuario == idJugador)
+                .Where(x => x.IdUsuario == idJugador && !x.Activo)
                 .ToListAsync();
 
             var totalPartidas = partidas.Count();
@@ -64,6 +64,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
               .Include(x => x.DetallesJuego)
               .ThenInclude(x => x.IdCartaNavigation)
               .ThenInclude(x => x.IdCategoriaNavigation)
+              .Where(x => !x.Activo)
               .ToListAsync();
 
             if (query.Count() <= 0)
@@ -92,7 +93,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
               .Include(x => x.DetallesJuego)
               .ThenInclude(x => x.IdCartaNavigation)
               .ThenInclude(x => x.IdCategoriaNavigation)
-              .Where(x => x.IdUsuario == idUsuario)
+              .Where(x => x.IdUsuario == idUsuario && !x.Activo)
               .ToListAsync();
 
             var group = query.GroupBy(x => x.IdJuego);
