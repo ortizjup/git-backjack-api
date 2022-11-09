@@ -5,6 +5,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Security
 {
     public interface ISecurityService
     {
+        string GetLoggedUser();
         Task<Usuarios> Login(string email, string password);
         Task<Usuarios> RegistrarUsuario(Usuarios user, string password);
         Task<bool> UsuarioExiste(string email);

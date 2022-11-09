@@ -1,17 +1,26 @@
 ﻿using BlackJack.NetCore.Web.Api.DataContext;
 using BlackJack.NetCore.Web.Api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BlackJack.NetCore.Web.Api.Services.Security
 {
     public class SecurityService : ISecurityService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TpiBlackJackDbContext _context;
 
-        public SecurityService(TpiBlackJackDbContext context)
+        public SecurityService(TpiBlackJackDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public string GetLoggedUser()
+        {
+            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value ?? null;
         }
 
         public async Task<Usuarios> Login(string email, string password)

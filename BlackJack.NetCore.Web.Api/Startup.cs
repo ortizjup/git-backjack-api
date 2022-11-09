@@ -45,6 +45,8 @@ namespace BlackJack.NetCore.Web.Api
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<IServicioJuego, ServicioJuego>();
             services.AddScoped<ICartaService, CartaService>();
+            services.AddScoped<IReporteService, ReporteService>();
+            services.AddHttpContextAccessor();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>
                {
