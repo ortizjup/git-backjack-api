@@ -33,6 +33,16 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                 .ToListAsync();
 
             var totalPartidas = partidas.Count();
+
+            if (totalPartidas <= 0)
+            {
+                return new ReporteIndicePartidaGanadasCrupier
+                {
+                    PorcentajeCrupier = 0,
+                    PorcentajeJugador = 0
+                };
+            }
+
             var partidasGanadasCrupier = partidas.Count(x => x.DetallesJuego.Where(x => x.EsCartaCrupier)
                                 .Sum(x => x.ValorCarta) > x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta));
             var partidasGanadasJugador = partidas.Count(x => x.DetallesJuego.Where(x => !x.EsCartaCrupier)
@@ -52,6 +62,11 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
               .ThenInclude(x => x.IdCartaNavigation)
               .ThenInclude(x => x.IdCategoriaNavigation)
               .ToListAsync();
+
+            if (query.Count() <= 0)
+            {
+                return new List<ReporteCantidadJuegosYJugadoresPorDia>();
+            }
 
             foreach (var group in query.GroupBy(x => x.Fecha.Date))
             {
@@ -78,8 +93,8 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
               .ToListAsync();
 
             var group = query.GroupBy(x => x.IdJuego);
-            
-            if(group.Count() <= 0)
+
+            if (group.Count() <= 0)
             {
                 return new ReportePromedioPartidasBlackJack
                 {
