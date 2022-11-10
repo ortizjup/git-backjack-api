@@ -58,10 +58,11 @@ CREATE TABLE `juegos` (
   `ganoJugador` bit(1) DEFAULT NULL,
   `scoreJugador` int(11) DEFAULT NULL,
   `scoreCrupier` int(11) DEFAULT NULL,
+  `esEmpate` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id_juego`),
   KEY `Juegos_Usuarios_idx` (`id_usuario`),
   CONSTRAINT `Juegos_Usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=347 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=386 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `detalles_juego` (
   `id_detalle_juego` int(11) NOT NULL AUTO_INCREMENT,
