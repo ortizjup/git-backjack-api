@@ -2,8 +2,8 @@
 {
     public class ReporteIndicePartidaGanadasCrupier
     {
-        public decimal? PorcentajeCrupier { get; set; }
+        public decimal PorcentajeCrupier { get; set; }
 
-        public decimal? PorcentajeJugador { get; set; }
+        public decimal PorcentajeJugador { get; set; }
     }
 }

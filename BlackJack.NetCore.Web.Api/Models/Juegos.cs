@@ -20,6 +20,7 @@ namespace BlackJack.NetCore.Web.Api.Models
         public bool Activo { get; set; }
         public string Description { get; set; }
         public bool? GanoJugador { get; set; }
+        public bool? EsEmpate { get; set; }
         public int? ScoreJugador { get; set; }
         public int? ScoreCrupier { get; set; }
 

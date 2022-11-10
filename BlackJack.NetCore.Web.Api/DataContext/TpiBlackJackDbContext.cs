@@ -232,6 +232,10 @@ namespace BlackJack.NetCore.Web.Api.DataContext
                     .HasColumnName("ganoJugador")
                     .HasColumnType("bit(1)");
 
+                entity.Property(e => e.EsEmpate)
+                   .HasColumnName("esEmpate")
+                   .HasColumnType("bit(1)");
+
                 entity.Property(e => e.IdUsuario)
                     .HasColumnName("id_usuario")
                     .HasColumnType("int(11)");

@@ -127,14 +127,15 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
             await _tpiBlackJackDbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateGameStatus(int idUsuario, int idJuego, int scoreCrupier, int scoreJugador)
+        public async Task UpdateGameStatus(int idUsuario, int idJuego, int scoreCrupier, int scoreJugador, bool ganoJugador, bool esEmpte)
         {
             var juego = await _tpiBlackJackDbContext.Juegos.FirstOrDefaultAsync(x => x.IdUsuario == idUsuario && x.IdJuego == idJuego);
 
             juego.ScoreCrupier = scoreCrupier;
             juego.ScoreJugador = scoreJugador;
             juego.Activo = false;
-            juego.GanoJugador = scoreCrupier <= scoreJugador;
+            juego.GanoJugador = ganoJugador;
+            juego.EsEmpate = esEmpte;
 
             await _tpiBlackJackDbContext.SaveChangesAsync();
         }

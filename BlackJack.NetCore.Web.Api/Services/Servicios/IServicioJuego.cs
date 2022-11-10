@@ -12,7 +12,7 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
         Task AddDetallesJuegos(List<CartaDto> cartas, int idJuego, bool esCartaCrupier);
         Task<JuegoDto> AddJuego(int idUsuario);
         Task UpdateValorCarta(int idUsuario, int idJuego, int idCarta, int valorSolicitado);
-        Task UpdateGameStatus(int idUsuario, int idJuego, int scoreCrupier, int scoreJugador);
+        Task UpdateGameStatus(int idUsuario, int idJuego, int scoreCrupier, int scoreJugador, bool ganaJugador, bool esEmpte);
         Task<List<JuegoDto>> GetLatestGames(int idUsuario);
 
         Task<ActiveGameSetupDto> GetActiveGame(int idUsuario);

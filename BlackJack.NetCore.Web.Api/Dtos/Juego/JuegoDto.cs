@@ -14,6 +14,7 @@ namespace BlackJack.NetCore.Web.Api.Dtos.Juego
         public bool Activo { get; set; }
         public string Description { get; set; }
         public bool? GanoJugador { get; set; }
+        public bool? EsEmpate { get; set; }
         public int? ScoreCrupier { get; set; }
         public int? ScoreJugador { get; set; }
 
@@ -30,6 +31,8 @@ namespace BlackJack.NetCore.Web.Api.Dtos.Juego
                 Usuario = juego.IdUsuarioNavigation,
                 ScoreCrupier = juego.ScoreCrupier,
                 ScoreJugador = juego.ScoreJugador,
+                GanoJugador = juego.GanoJugador,
+                EsEmpate = juego.EsEmpate ?? false,
                 DetallesJuego = juego.DetallesJuego.Select<DetallesJuego, DetallesJuegoDto>(x => x).ToList()
             };
         }

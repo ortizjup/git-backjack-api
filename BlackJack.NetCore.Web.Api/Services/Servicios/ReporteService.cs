@@ -24,17 +24,17 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
         public async Task<ReporteIndicePartidaGanadasCrupier> GetReporteIndicePartidaGanadasCrupier(int idJugador)
         {
             var partidas = await _tpiBlackJackDbContext.Juegos
-                .AsNoTracking()
-                .Include(x => x.IdUsuarioNavigation)
-                .Include(x => x.DetallesJuego)
-                .ThenInclude(x => x.IdCartaNavigation)
-                .ThenInclude(x => x.IdCategoriaNavigation)
-                .Where(x => x.IdUsuario == idJugador && !x.Activo)
-                .ToListAsync();
+           .AsNoTracking()
+           .Include(x => x.IdUsuarioNavigation)
+           .Include(x => x.DetallesJuego)
+           .ThenInclude(x => x.IdCartaNavigation)
+           .ThenInclude(x => x.IdCategoriaNavigation)
+           .Where(x => x.IdUsuario == idJugador && !x.Activo)
+           .ToListAsync();
 
-            var totalPartidas = partidas.Count();
-            var partidasGanadasCrupier = 0;
-            var partidasGanadasJugador = 0;
+            decimal totalPartidas = partidas.GroupBy(x => x.IdJuego).Count();
+            decimal partidasGanadasCrupier = partidas.Where(x => x.GanoJugador == false && !(x.EsEmpate ?? false)).Count();
+            decimal partidasGanadasJugador = partidas.Where(x => x.GanoJugador == true && !(x.EsEmpate ?? false)).Count();
 
             if (totalPartidas <= 0)
             {
@@ -45,13 +45,11 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                 };
             }
 
-            foreach (var partida in partidas.GroupBy(x => x.IdJuego))
+            return new ReporteIndicePartidaGanadasCrupier
             {
-                partidasGanadasCrupier += partida.Where(x => x.DetallesJuego.Where(x => x.EsCartaCrupier).Sum(x => x.ValorCarta) > x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta)).Count();
-                partidasGanadasJugador += partida.Where(x => x.DetallesJuego.Where(x => x.EsCartaCrupier).Sum(x => x.ValorCarta) < x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta)).Count();
-            }
-
-            return new ReporteIndicePartidaGanadasCrupier { PorcentajeCrupier = ((partidasGanadasCrupier / totalPartidas) * 100), PorcentajeJugador = ((partidasGanadasJugador / totalPartidas) * 100) };
+                PorcentajeCrupier = ((partidasGanadasCrupier / totalPartidas) * 100),
+                PorcentajeJugador = ((partidasGanadasJugador / totalPartidas) * 100)
+            };
         }
 
         public async Task<List<ReporteCantidadJuegosYJugadoresPorDia>> GetReporteCantidadJuegosYJugadoresPorDia()
@@ -64,7 +62,6 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
               .Include(x => x.DetallesJuego)
               .ThenInclude(x => x.IdCartaNavigation)
               .ThenInclude(x => x.IdCategoriaNavigation)
-              .Where(x => !x.Activo)
               .ToListAsync();
 
             if (query.Count() <= 0)
@@ -76,9 +73,9 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
             {
                 results.Add(new ReporteCantidadJuegosYJugadoresPorDia
                 {
-                    GameDate = group.Key.ToString("dd/MM/yyy"),
-                    CantidadJuegos = group.ToList().Select(s => s.IdJuego).Count(),
-                    CantidadJugadores = group.ToList().Select(s => s.IdUsuario).Count()
+                    GameDate = group.Key.ToString("MM/dd/yyyy"),
+                    CantidadJuegos = group.Count(),
+                    CantidadJugadores = group.Select(s => s.IdUsuario).Count()
                 });
             }
 
@@ -87,16 +84,19 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
 
         public async Task<ReportePromedioPartidasBlackJack> GetReportePromedioPartidasBlackJack(int idUsuario)
         {
+            decimal juegosJugadorBl = 0;
+            decimal juegosCrupierBl = 0;
             var query = await _tpiBlackJackDbContext.Juegos
               .AsNoTracking()
               .Include(x => x.IdUsuarioNavigation)
               .Include(x => x.DetallesJuego)
               .ThenInclude(x => x.IdCartaNavigation)
               .ThenInclude(x => x.IdCategoriaNavigation)
-              .Where(x => x.IdUsuario == idUsuario && !x.Activo)
+              .Where(x => x.IdUsuario == idUsuario && !x.Activo && !(x.EsEmpate ?? false))
               .ToListAsync();
 
             var group = query.GroupBy(x => x.IdJuego);
+            var count = group.Count();
 
             if (group.Count() <= 0)
             {
@@ -106,10 +106,6 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
                     PromedioBlackJackCrupier = 0
                 };
             }
-
-            var juegosJugadorBl = 0;
-            var juegosCrupierBl = 0;
-
             foreach (var item in group)
             {
                 juegosJugadorBl += item.Count(x => x.DetallesJuego.Where(x => !x.EsCartaCrupier).Sum(x => x.ValorCarta) == 21);
@@ -118,8 +114,8 @@ namespace BlackJack.NetCore.Web.Api.Services.Servicios
 
             return new ReportePromedioPartidasBlackJack
             {
-                PromedioBlackJackJugador = ((juegosJugadorBl / group.Count()) * 100),
-                PromedioBlackJackCrupier = ((juegosCrupierBl / group.Count()) * 100)
+                PromedioBlackJackJugador = ((juegosJugadorBl / count) * 100),
+                PromedioBlackJackCrupier = ((juegosCrupierBl / count) * 100)
             };
         }
     }

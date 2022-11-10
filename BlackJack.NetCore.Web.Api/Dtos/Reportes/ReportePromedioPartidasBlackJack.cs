@@ -2,7 +2,7 @@
 {
     public class ReportePromedioPartidasBlackJack
     {
-        public int PromedioBlackJackCrupier { get; set; }
-        public int PromedioBlackJackJugador { get; set; }
+        public decimal PromedioBlackJackCrupier { get; set; }
+        public decimal PromedioBlackJackJugador { get; set; }
     }
 }

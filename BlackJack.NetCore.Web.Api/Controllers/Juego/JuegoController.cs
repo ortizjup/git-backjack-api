@@ -49,7 +49,7 @@ namespace BlackJack.NetCore.Web.Api.Controllers.Juego
         [HttpPost("updateGameStatus")]
         public async Task<IActionResult> UpdateGameStatus([FromBody] UpdateGameStatusRequestDto dto)
         {
-            await _servicio.UpdateGameStatus(dto.idUsuario, dto.idJuego, dto.scoreCrupier, dto.scoreJugador);
+            await _servicio.UpdateGameStatus(dto.idUsuario, dto.idJuego, dto.scoreCrupier, dto.scoreJugador, dto.GanaJugador, dto.EsEmpate);
             return Ok();
         }
 
